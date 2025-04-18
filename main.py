@@ -1,5 +1,6 @@
 import torch
-import torch.nn as nn
+from torch import nn, optim
+from torch.utils.data import DataLoader, TensorDataset
 
 
 class DLRM(nn.Module):
@@ -95,14 +96,56 @@ if __name__ == "__main__":
         * num_sparse_features,  # categorical features, set num_embeddings=1000
         interaction_op="dot",
     )
+    batch_size = 32
 
-    # Dummy input
-    dense_input = torch.rand(
-        128, num_dense_features
-    )  # batch_size=128, dense features=13
-    sparse_input = torch.randint(
-        low=0, high=1000, size=(128, num_sparse_features)
-    )  # batch_size=128, 26 categorical features
+    # Dummy data (1000 samples)
+    dense_features = torch.randn(1000, num_dense_features)
+    sparse_features = torch.randint(0, 1000, (1000, num_sparse_features))
+    labels = torch.randint(0, 2, (1000, 1)).float()
 
-    output = model(dense_input, sparse_input)
-    print("Model output:", output)
+    # Dataset and DataLoader
+    dataset = TensorDataset(dense_features, sparse_features, labels)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+    # Training
+    criterion = nn.BCELoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    epochs = 5
+    model.train()
+    for epoch in range(epochs):
+        total_loss = 0.0
+        for dense_x, sparse_idx, y in dataloader:
+            optimizer.zero_grad()
+            outputs = model(dense_x, sparse_idx)
+            loss = criterion(outputs, y)
+            loss.backward()
+            optimizer.step()
+            total_loss += loss.item()
+        print(f"Epoch {epoch + 1}, Loss: {total_loss / len(dataloader):.4f}")
+
+    # Save model
+    torch.save(model.state_dict(), "dlrm_model.pth")
+
+    # Load model for inference
+    inference_model = DLRM(
+        bottom_mlp_sizes=[
+            num_dense_features,
+            512,
+            256,
+            64,
+            embedding_dim,
+        ],  # dense features
+        top_mlp_sizes=[512, 256, 1],
+        embedding_sizes=[(1000, embedding_dim)]
+        * num_sparse_features,  # categorical features, set num_embeddings=1000
+        interaction_op="dot",
+    )
+    inference_model.load_state_dict(torch.load("dlrm_model.pth"))
+    inference_model.eval()
+
+    # Inference
+    with torch.no_grad():
+        dense_input = torch.randn(1, num_dense_features)
+        sparse_input = torch.randint(0, 1000, (1, num_sparse_features))
+        prediction = inference_model(dense_input, sparse_input)
+        print("Prediction:", prediction.item())
