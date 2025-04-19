@@ -1,4 +1,4 @@
-# Simple_DLRM
+# Simple DLRM
 
 Deep Learning Recommendation Model (DLRM) for Personalization and Recommendation Systems
 - Blog: https://ai.facebook.com/blog/dlrm-an-advanced-open-source-deep-learning-recommendation-model/
