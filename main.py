@@ -83,9 +83,8 @@ if __name__ == "__main__":
     num_dense_features = 13
     num_sparse_features = 26
     embedding_dim = 16
-    embedding_sizes = [
-        (1000, embedding_dim)
-    ] * num_sparse_features  # set num_embeddings=1000
+    num_embeddings = 1000
+    embedding_sizes = [(num_embeddings, embedding_dim)] * num_sparse_features
     model = DLRM(
         bottom_mlp_sizes=[
             num_dense_features,
@@ -102,7 +101,7 @@ if __name__ == "__main__":
 
     # Dummy data (1000 samples)
     dense_features = torch.randn(1000, num_dense_features)
-    sparse_features = torch.randint(0, 1000, (1000, num_sparse_features))
+    sparse_features = torch.randint(0, num_embeddings, (1000, num_sparse_features))
     labels = torch.randint(0, 2, (1000, 1)).float()
 
     # Dataset and DataLoader
@@ -147,6 +146,6 @@ if __name__ == "__main__":
     # Inference
     with torch.no_grad():
         dense_input = torch.randn(1, num_dense_features)
-        sparse_input = torch.randint(0, 1000, (1, num_sparse_features))
+        sparse_input = torch.randint(0, num_embeddings, (1, num_sparse_features))
         prediction = inference_model(dense_input, sparse_input)
         print("Prediction:", prediction.item())
