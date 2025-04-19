@@ -21,3 +21,6 @@ pip install torch torchvision torchaudio
 ```
 python3 main.py
 ```
+```
+ls -lh dlrm_model.pth
+```

@@ -83,6 +83,9 @@ if __name__ == "__main__":
     num_dense_features = 13
     num_sparse_features = 26
     embedding_dim = 16
+    embedding_sizes = [
+        (1000, embedding_dim)
+    ] * num_sparse_features  # set num_embeddings=1000
     model = DLRM(
         bottom_mlp_sizes=[
             num_dense_features,
@@ -92,8 +95,7 @@ if __name__ == "__main__":
             embedding_dim,
         ],  # dense features
         top_mlp_sizes=[512, 256, 1],
-        embedding_sizes=[(1000, embedding_dim)]
-        * num_sparse_features,  # categorical features, set num_embeddings=1000
+        embedding_sizes=embedding_sizes,
         interaction_op="dot",
     )
     batch_size = 32
@@ -136,8 +138,7 @@ if __name__ == "__main__":
             embedding_dim,
         ],  # dense features
         top_mlp_sizes=[512, 256, 1],
-        embedding_sizes=[(1000, embedding_dim)]
-        * num_sparse_features,  # categorical features, set num_embeddings=1000
+        embedding_sizes=embedding_sizes,
         interaction_op="dot",
     )
     inference_model.load_state_dict(torch.load("dlrm_model.pth"))
