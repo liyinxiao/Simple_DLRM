@@ -1,0 +1,24 @@
+# Virtual environment
+.env/
+venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# PyTorch model files
+*.pth
+*.pt
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp

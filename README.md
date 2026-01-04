@@ -18,9 +18,14 @@ source  .env/bin/activate
 ```
 pip install torch torchvision torchaudio
 ```
+Basic DLRM with BCE loss
 ```
-python3 main.py
+python3 simple_dlrm.py
 ```
 ```
 ls -lh dlrm_model.pth
+```
+DLRM with LambdaMART for NDCG optimization (ranking)
+```
+python3 lambdamart_dlrm.py
 ```
